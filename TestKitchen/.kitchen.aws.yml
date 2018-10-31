@@ -1,0 +1,65 @@
+---
+driver:
+  name: ec2  
+  security_group_ids: ["sg-xxx"]
+  region: ap-southeast-2
+  availability_zone: b
+  subnet_id: subnet-xxxx
+  iam_profile_name: profile-ec2-default
+  instance_type: t3.small
+  associate_public_ip: true
+  interface: private
+  tags:
+    Project: Test
+    CostCenter: Development
+
+transport:
+  #ssh_key: /path/to/id_rsa-aws
+  connection_timeout: 10
+  connection_retries: 60
+
+provisioner:
+    name: dsc
+    dsc_local_configuration_manager_version: wmf5
+    dsc_local_configuration_manager:
+      reboot_if_needed: true
+      #configuration_mode_frequency_mins: 30
+      #debug_mode: none
+    configuration_script_folder: examples
+    configuration_script: dsc_configuration.ps1
+    #modules_path: .
+    #configuration_data_variable: configData
+    #modules_from_gallery:
+    # - xPSDesiredStateConfiguration
+    # - PackageManagementProviderResource
+
+verifier:
+  name: pester
+  test_folder: Tests/Integration
+
+platforms:
+  - name: windows-2012r2    
+    transport:
+      name: winrm
+      username: administrator             
+    driver:
+      image_id: ami-0664c039c4dea5193      
+      retryable_tries: 60
+      retryable_sleep: 10
+    provisioner:
+        dsc_local_configuration_manager_version: wmf4  
+  - name: windows-2016
+    transport:
+      name: winrm
+      username: administrator             
+    driver:
+      image_id: ami-0096a7a7add65af89      
+      retryable_tries: 60
+      retryable_sleep: 10      
+    provisioner:
+        dsc_local_configuration_manager_version: wmf5
+     
+suites:
+  - name: default
+
+  

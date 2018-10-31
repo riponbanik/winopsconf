@@ -1,0 +1,46 @@
+driver:  
+  name: vagrant
+  provider: hyperv
+  network:
+  - ["public_network", bridge: "Default Switch"]
+
+transport:
+  name: winrm
+  username: vagrant
+  password: vagrant
+
+provisioner:
+    name: dsc
+    dsc_local_configuration_manager_version: wmf5
+    dsc_local_configuration_manager:
+      reboot_if_needed: true
+      #configuration_mode_frequency_mins: 30
+      #debug_mode: none
+    configuration_script_folder: examples
+    configuration_script: dsc_configuration.ps1
+    #modules_path: .
+    #configuration_data_variable: configData
+    #modules_from_gallery:
+    # - xPSDesiredStateConfiguration
+    # - PackageManagementProviderResource
+
+verifier:
+  name: pester
+  test_folder: Tests/Integration
+
+platforms:
+  - name: winserver2012
+    driver_config:
+      box: windows_2012
+      communicator: winrm
+      provisioner:
+        dsc_local_configuration_manager_version: wmf4
+  - name: winserver1803
+    driver_config:
+      box: windows_server_1803
+      communicator: winrm      
+      provisioner:
+        dsc_local_configuration_manager_version: wmf5  
+
+suites:
+  - name: default
